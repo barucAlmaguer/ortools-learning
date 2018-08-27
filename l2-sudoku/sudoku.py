@@ -3,6 +3,18 @@ Problem at hand:
 generate a model and solver that can print any possible sudoku game
 '''
 from ortools.constraint_solver import pywrapcp
+# Here, we can add our specific restrictions to find a certain sudoku solution:
+# Change 0's for the numbers you want to fix in the board:
+my_board = []
+my_board.append([1, 2, 3, 0, 0, 0, 0, 0, 0])
+my_board.append([4, 5, 6, 0, 0, 0, 0, 0, 0])
+my_board.append([7, 8, 9, 0, 0, 0, 0, 0, 0])
+my_board.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+my_board.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+my_board.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+my_board.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+my_board.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+my_board.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 solver = pywrapcp.Solver('Sudoku')
 # restrictions (Sudoku cells)
 board = [
@@ -23,22 +35,16 @@ def constrain_quadrant(row, col):
         for j in range(3):
             quadrant.append(board[row+i][col+j])
     solver.Add(solver.AllDifferent(quadrant))
-# Here, we can add our specific restrictions to find a certain sudoku solution:
-# TEST
-solver.Add(board[0][0] == 1)
-solver.Add(board[1][1] == 2)
-solver.Add(board[2][2] == 3)
-solver.Add(board[3][3] == 4)
-solver.Add(board[4][4] == 5)
-solver.Add(board[5][5] == 6)
-solver.Add(board[6][6] == 7)
-solver.Add(board[7][7] == 8)
-solver.Add(board[8][8] == 9)
 # We loop through the 9 quadrant's top left corners
 # and place constraints
 for i in range(0, 9, 3):
     for j in range(0, 9, 3):
         constrain_quadrant(i, j)
+# Add specific restrictions
+for i, r in enumerate(my_board):
+  for j, c in enumerate(r):
+    if(c != 0):
+      solver.Add(board[i][j] == c) # Add restrictions
 # configure solver to generate random sudoku boards
 # first, we unwrap the board to a 1-D List
 from itertools import chain
@@ -54,7 +60,7 @@ solver.ReSeed(int(rand() * 1000000))
 # Solve the problem!
 solver.Solve(sudoku_phase)
 # helper function to print the board
-def printSudokuBoard(board):
+def printSudokuBoard():
   for i, r in enumerate(board):
     if(i in [3, 6]):
       print('-----------------------')
@@ -66,4 +72,9 @@ def printSudokuBoard(board):
     text = text.strip(' ') + ']'
     print(text)
 # generate first solution:
-solver.NextSolution()
+if(solver.NextSolution()):
+  print('Solution found! use printSudokuBoard() to view the graphic solution')
+  print('or solver.NextSolution() to get another one')
+else:
+  print('Solution not found :(')
+  print('Check your restrictions on my_board')
