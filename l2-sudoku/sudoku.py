@@ -23,7 +23,17 @@ def constrain_quadrant(row, col):
         for j in range(3):
             quadrant.append(board[row+i][col+j])
     solver.Add(solver.AllDifferent(quadrant))
-
+# Here, we can add our specific restrictions to find a certain sudoku solution:
+# TEST
+solver.Add(board[0][0] == 1)
+solver.Add(board[1][1] == 2)
+solver.Add(board[2][2] == 3)
+solver.Add(board[3][3] == 4)
+solver.Add(board[4][4] == 5)
+solver.Add(board[5][5] == 6)
+solver.Add(board[6][6] == 7)
+solver.Add(board[7][7] == 8)
+solver.Add(board[8][8] == 9)
 # We loop through the 9 quadrant's top left corners
 # and place constraints
 for i in range(0, 9, 3):
